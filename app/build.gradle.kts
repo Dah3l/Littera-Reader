@@ -64,6 +64,9 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        // Desugaring: OBLIGATORIO para Readium (usa APIs nuevas de Java
+        // en minSdk viejos). Sabor NIO, el mismo verificado en AuralPlayer.
+        isCoreLibraryDesugaringEnabled = true
     }
 
     buildFeatures {
@@ -104,4 +107,14 @@ dependencies {
 
     // ---- Coroutines ----
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+
+    // ---- Desugaring (ver compileOptions) ----
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:2.1.5")
+
+    // ---- Readium Kotlin Toolkit 3.4.0 (lector EPUB, fase 2) ----
+    // shared: modelo Publication/Locator · streamer: abrir el EPUB ·
+    // navigator: el lector visual (EpubNavigatorFragment).
+    implementation("org.readium.kotlin-toolkit:readium-shared:3.4.0")
+    implementation("org.readium.kotlin-toolkit:readium-streamer:3.4.0")
+    implementation("org.readium.kotlin-toolkit:readium-navigator:3.4.0")
 }
