@@ -17,5 +17,7 @@ data class Book(
     val fileName: String,
     val addedAtMs: Long,
     val progress: Float = 0f,
-    val locator: String? = null
+    val locator: String? = null,
+    /** Nombre del archivo de portada en filesDir/covers/, si el libro trae una. */
+    val coverFileName: String? = null
 )
