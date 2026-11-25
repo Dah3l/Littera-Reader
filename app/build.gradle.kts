@@ -117,4 +117,10 @@ dependencies {
     implementation("org.readium.kotlin-toolkit:readium-shared:3.4.0")
     implementation("org.readium.kotlin-toolkit:readium-streamer:3.4.0")
     implementation("org.readium.kotlin-toolkit:readium-navigator:3.4.0")
+
+    // Fragment: Readium lo usa como dependencia interna y NO llega al
+    // classpath de compilación de la app; el lector (FragmentActivity,
+    // Fragment, FragmentContainerView) lo necesita declarado aquí.
+    // Misma versión que usa Readium 3.4.0.
+    implementation("androidx.fragment:fragment-ktx:1.9.0")
 }
