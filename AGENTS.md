@@ -18,11 +18,20 @@ Lector de libros Android (Kotlin + Jetpack Compose), 100% offline, para publicar
 
 ## Fases
 
-1. **Esqueleto + biblioteca + importar** (en curso).
-2. Lector EPUB con Readium: temas, letra, capítulos, progreso, marcadores + metadatos reales al importar.
+1. **Esqueleto + biblioteca + importar** ✅ (2026-11-25, verificado por Dahel).
+2. **Lector EPUB con Readium** ✅ (2026-11-25): temas, letra, capítulos, progreso, marcadores + metadatos reales al importar.
 3. Lectores PDF, DOCX y TXT.
 4. TTS (EPUB/DOCX/TXT) con controles y reanudación.
 5. Pulido, firma release (v1+v2, Apklis exige v1) y publicación.
+
+## Notas Readium 3.4.0 (verificadas contra las fuentes oficiales)
+
+- Abrir: `AssetRetriever(contentResolver, DefaultHttpClient())` + `PublicationOpener(DefaultPublicationParser(context, assetRetriever, httpClient, pdfFactory = null))`; `file.toUrl(isDirectory = false)`; `open(asset, allowUserInteraction = false)` devuelve `Try` (usar `getOrElse`).
+- Readium EXIGE desugaring activo (flavor NIO 2.1.5, el de Aural).
+- Navigator: `EpubNavigatorFactory(publication).createFragmentFactory(initialLocator, initialPreferences, listener)` instalada en el `childFragmentManager.fragmentFactory` del fragmento anfitrión ANTES de `super.onCreate`; sin sesión → `EpubNavigatorFragment.createDummyFactory()` + `finish()` (ReaderFragment).
+- Preferencias: `EpubPreferences(theme = Theme.LIGHT/DARK/SEPIA, fontSize = multiplicador, fontFamily = FontFamily.SERIF/SANS_SERIF)` + `navigator.submitPreferences(...)`; persistencia con `EpubPreferencesSerializer`. Constructor y media API llevan `@OptIn(ExperimentalReadiumApi::class)`.
+- Progreso: `navigator.currentLocator` (StateFlow) → `locator.toJSON()`; restaurar con `Locator.fromJSON(JSONObject)`; % en `locator.locations.totalProgression`.
+- Metadatos al importar: parseo propio del OPF (EpubMetadataParser), sin pasar por Readium.
 
 ## Reglas de trabajo
 
@@ -37,3 +46,4 @@ Lector de libros Android (Kotlin + Jetpack Compose), 100% offline, para publicar
 | Fecha | Agente | Cambio | Archivos |
 |---|---|---|---|
 | 2026-11-25 | Malen-IA | Fase 1: esqueleto del proyecto (Gradle/AGP/Compose), biblioteca con índice JSON, importación SAF (EPUB/PDF/DOCX/TXT), icono y tema papel/tinta | todo el repo |
+| 2026-11-25 | Malen-IA | Fase 2: lector EPUB con Readium 3.4.0 (ReaderActivity/Fragment/Chrome, sesión, preferencias), metadatos y portadas reales al importar, marcadores y progreso en la biblioteca | app/build.gradle.kts, data/, reader/, ui/, manifest, layout |
