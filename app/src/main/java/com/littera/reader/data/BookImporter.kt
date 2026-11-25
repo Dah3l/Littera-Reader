@@ -9,9 +9,9 @@ import java.util.UUID
 /**
  * Importa libros desde el selector de archivos del sistema (SAF):
  * copia el archivo al almacenamiento interno y crea su ficha.
- * En la fase 1 el título sale del nombre del archivo; la extracción de
- * metadatos reales (título/autor/portada del EPUB) llega con Readium
- * en la fase 2.
+ * En EPUB extrae además los metadatos reales (título, autor y portada)
+ * con [EpubMetadataParser]; en el resto, el título sale del nombre del
+ * archivo hasta que cada lector extraiga los suyos (fase 3).
  */
 object BookImporter {
 
@@ -55,13 +55,36 @@ object BookImporter {
             dest.delete()
             return null
         }
-        val title = name.substringBeforeLast('.').replace('_', ' ').trim()
+        var title = name.substringBeforeLast('.').replace('_', ' ').trim()
+        var author = ""
+        var coverFileName: String? = null
+        // En EPUB se extraen los metadatos reales (título, autor, portada)
+        // del propio archivo. Si algo falla, se queda la ficha por nombre:
+        // la importación nunca se bloquea por los metadatos.
+        if (format == BookFormat.EPUB) {
+            EpubMetadataParser.parse(dest)?.let { meta ->
+                if (!meta.title.isNullOrBlank()) title = meta.title
+                if (!meta.author.isNullOrBlank()) author = meta.author
+                val bytes = meta.coverBytes
+                if (bytes != null) {
+                    val coverName = "$id.${meta.coverExt ?: "jpg"}"
+                    try {
+                        File(store.coversDir, coverName).writeBytes(bytes)
+                        coverFileName = coverName
+                    } catch (e: Exception) {
+                        // Sin portada: la biblioteca usa el marcador genérico.
+                    }
+                }
+            }
+        }
         return Book(
             id = id,
             title = title.ifBlank { name },
+            author = author,
             format = format,
             fileName = fileName,
-            addedAtMs = System.currentTimeMillis()
+            addedAtMs = System.currentTimeMillis(),
+            coverFileName = coverFileName
         )
     }
 }
