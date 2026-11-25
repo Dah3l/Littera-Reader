@@ -1,0 +1,13 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Libro abierto: dos páginas desde el lomo central -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M30,30 C38,24 46,24 54,29 L54,82 C46,77 38,77 30,82 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,29 C62,24 70,24 78,30 L78,82 C70,77 62,77 54,82 Z" />
+</vector>
